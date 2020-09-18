@@ -1,0 +1,116 @@
+jQuery(document).ready(function($){'use strict';
+
+/* ---------------------------------------------------------
+    Preloader
+------------------------------------------------------------ */ 
+    $(window).on('load', function () {
+        if ($(".pre-loader").length > 0)
+        {
+            $(".pre-loader").fadeOut("slow");
+        }
+    });
+
+/* ---------------------------------------------------------
+    Sticky Header
+------------------------------------------------------------ */ 
+    var header = $("#header"),
+        yOffset = 0,
+        triggerPoint = 10;
+        $(window).on( 'scroll', function() {
+        yOffset = $(window).scrollTop();
+            if (yOffset >= triggerPoint) {
+                header.addClass("fixed-top");
+            } else {
+                header.removeClass("fixed-top");
+            }
+        });
+
+
+/* ---------------------------------------------------------
+    Search
+------------------------------------------------------------ */ 
+    var $srcicon = $('.search-icon a'),
+        $srcfield = $('#search'),
+        $window     = $(window);
+    $srcicon.on('click', function(event){
+        event.preventDefault();
+        $srcfield.addClass('visible');
+        event.stopPropagation();
+    });
+    $('.search-close').on('click', function(){
+        $srcfield.removeClass('visible');
+    });
+    $srcfield.on('click', function(event){
+        event.stopPropagation();
+    });
+    $window.on('click', function(e){
+        $srcfield.removeClass('visible');
+    });
+
+/* ---------------------------------------------------------
+    Back to top
+------------------------------------------------------------ */ 
+        function bddex_back_top() {
+            $('#back_top').on('click', function() {
+                $('html,body').animate({
+                    scrollTop: 0
+                }, 400);
+                return false;
+            });
+
+            if ($(window).scrollTop() > 300) {
+                $('#back_top').addClass('back_top');
+            } else {
+                $('#back_top').removeClass('back_top');
+            }
+
+            $(window).on('scroll', function() {
+
+                if ($(window).scrollTop() > 300) {
+                    $('#back_top').addClass('back_top');
+                } else {
+                    $('#back_top').removeClass('back_top');
+                }
+            });
+        }
+        bddex_back_top();
+
+/* ---------------------------------------------------------
+    Ajax login
+------------------------------------------------------------ */ 
+    $('a#show_login').on('click', function(e) {
+        $('body').prepend('<div class="login_overlay"></div>');
+        $('form#login').fadeIn(500);
+        $('div.login_overlay, form#login a.close').on('click', function() {
+            $('div.login_overlay').remove();
+            $('form#login').hide()
+        });
+        e.preventDefault()
+    });
+    $('form#login').on('submit', function(e) {
+        $('form#login p.status').show().text(ajax_login_object.loadingmessage);
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: ajax_login_object.ajaxurl,
+            data: {
+                'action': 'ajaxlogin',
+                'username': $('form#login #username').val(),
+                'password': $('form#login #password').val(),
+                'security': $('form#login #security').val()
+            },
+            success: function(data) {
+                $('form#login p.status').text(data.message);
+                if (data.loggedin == !0) {
+                    document.location.href = ajax_login_object.redirecturl
+                }
+            }
+        });
+        e.preventDefault()
+    });
+
+}); // End of jquery    
+
+/* ---------------------------------------------------------
+   EOF
+------------------------------------------------------------ */
